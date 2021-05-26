@@ -1,27 +1,19 @@
-#include <inttypes.h>
-#include <unistd.h>
-#include <rte_eal.h>
-#include <rte_ethdev.h>
-#include <rte_cycles.h>
-#include <rte_lcore.h>
-#include <rte_mbuf.h>
-#include <rte_ether.h>
-
 #include "portinit.h"
-
-
 
 static const struct rte_eth_conf port_conf_default = {
     .rxmode = {
         .max_rx_pkt_len = RTE_ETHER_MAX_LEN,
     },
+    .txmode = {
+        .mq_mode = ETH_MQ_TX_NONE,
+    }
 
 };
 
 int port_init(uint16_t port, struct rte_mempool *mbuf_pool)
 {
     struct rte_eth_conf port_conf = port_conf_default;
-    const uint16_t rx_rings = 1, tx_rings = 1;
+    const uint16_t rx_rings = NUM_RX_QUEUE, tx_rings = NUM_TX_QUEUE;
     uint16_t nb_rxd = RX_RING_SIZE;
     uint16_t nb_txd = TX_RING_SIZE;
     int retval;
@@ -58,6 +50,7 @@ int port_init(uint16_t port, struct rte_mempool *mbuf_pool)
         printf("port[%u] support TX MT lock free offload.\n", port);
         port_conf.txmode.offloads |= DEV_TX_OFFLOAD_MT_LOCKFREE;
     }
+
 
     if (dev_info.tx_offload_capa & DEV_TX_OFFLOAD_IPV4_CKSUM)
     {

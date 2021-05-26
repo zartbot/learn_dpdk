@@ -265,10 +265,7 @@ lcore_send(struct rte_mempool *mbuf_pool) {
     struct SRoU *msg;
     struct rte_mbuf *pkt[BURST_SIZE];
 
- 
-
-    for(;;) {
-           for (int i = 0; i < BURST_SIZE; i++)
+    for (int i = 0; i < BURST_SIZE; i++)
     {
         pkt[i] = rte_pktmbuf_alloc(mbuf_pool);
  }
@@ -308,13 +305,17 @@ lcore_send(struct rte_mempool *mbuf_pool) {
         pkt[i]->pkt_len = pkt_size;
     }
 
+
+    for(;;) {
     uint16_t nb_tx = rte_eth_tx_burst(0, 0, pkt, BURST_SIZE);
+    //printf("successful send %d pkts\n", nb_tx);
+    //sleep(2);
+
+    }
     for (int i = 0; i < BURST_SIZE; i++)
     {
         rte_pktmbuf_free(pkt[i]);
     }
-
-   }
 
 }
 
