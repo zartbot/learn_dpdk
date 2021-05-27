@@ -1,0 +1,15 @@
+{
+  "python.pythonPath": "/usr/bin/python3",
+  "editor.rulers": [80, 120, 150],
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/*/**": true,
+    "**/_note/*/**": true
+  },
+  "editor.detectIndentation": false, //关闭检测第一个tab后面就tab
+  "editor.renderControlCharacters": true, //制表符显示->
+  "editor.renderWhitespace": "all", //空格显示...
+  "editor.tabSize": 4, //tab为四个空格
+  "editor.insertSpaces": true //转为空格
+}

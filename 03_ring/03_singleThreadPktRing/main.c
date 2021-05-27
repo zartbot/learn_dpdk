@@ -14,10 +14,9 @@ int main(int argc, char *argv[])
 {
 
     struct rte_mempool *mbuf_pool;
-    struct rte_ring *tx_ring[NUM_TX_QUEUE];
+    struct rte_ring *tx_ring;
     struct rte_ring *rx_ring;
-    struct tx_params *tp[NUM_TX_QUEUE];
-    struct lcore_params *lp[NUM_TX_QUEUE];
+    struct lcore_params *lp;
     unsigned nb_ports = 2;
     uint16_t portid;
 
@@ -32,15 +31,10 @@ int main(int argc, char *argv[])
     if (mbuf_pool == NULL)
         rte_exit(EXIT_FAILURE, "Cannot create mbuf pool\n");
 
-    for (int i = 0; i < NUM_TX_QUEUE; ++i)
-    {
-        char tx_ring_name[14];
-        sprintf(tx_ring_name, "output_ring%d", i);
-        tx_ring[i] = rte_ring_create(tx_ring_name, SCHED_TX_RING_SZ,
-                                     rte_socket_id(), RING_F_SC_DEQ | RING_F_SP_ENQ);
-        if (tx_ring[i] == NULL)
-            rte_exit(EXIT_FAILURE, "Cannot create output ring\n");
-    }
+    tx_ring = rte_ring_create("output_ring", SCHED_TX_RING_SZ,
+                              rte_socket_id(), RING_F_SC_DEQ | RING_F_SP_ENQ);
+    if (tx_ring == NULL)
+        rte_exit(EXIT_FAILURE, "Cannot create output ring\n");
 
     rx_ring = rte_ring_create("Input_ring", SCHED_RX_RING_SZ,
                               rte_socket_id(), RING_F_SC_DEQ | RING_F_SP_ENQ);
@@ -53,40 +47,27 @@ int main(int argc, char *argv[])
         rte_exit(EXIT_FAILURE, "Cannot init port %" PRIu16 "\n",
                  portid);
 
-    unsigned int lcore_num = 37;
+    unsigned int lcore_num = 1;
     /* Start tx core */
-    for (int i = 0; i < NUM_TX_QUEUE; ++i)
-    {
-        tp[i] = rte_malloc(NULL, sizeof(*tp[i]), 0);
-        if (!tp[i])
-            rte_panic("malloc failure\n");
-        *tp[i] = (struct tx_params){i, tx_ring[i]};
-        rte_eal_remote_launch((lcore_function_t *)lcore_tx, tp[i], lcore_num++);
-    }
+    rte_eal_remote_launch((lcore_function_t *)lcore_tx, tx_ring, lcore_num++);
 
     /* Start rx core */
     struct lcore_params *pr = rte_malloc(NULL, sizeof(*pr), 0);
     if (!pr)
         rte_panic("malloc failure\n");
-    *pr = (struct lcore_params){5, rx_ring, tx_ring[0], mbuf_pool};
+    *pr = (struct lcore_params){rx_ring, tx_ring, mbuf_pool};
     rte_eal_remote_launch((lcore_function_t *)lcore_rx, pr, lcore_num++);
 
     /* Start pkt dequeue on port 1*/
     rte_eal_remote_launch((lcore_function_t *)lcore_recv_pkt, rx_ring, lcore_num++);
 
     /* start pkt enqueue on port 0*/
+    lp = rte_malloc(NULL, sizeof(*lp), 0);
+    if (!lp)
+        rte_panic("malloc failure\n");
+    *lp = (struct lcore_params){rx_ring, tx_ring, mbuf_pool};
+    rte_eal_remote_launch((lcore_function_t *)lcore_send_pkt, lp, lcore_num++);
 
-    for (int i = 0; i < NUM_TX_QUEUE; ++i)
-    {
-        lp[i] = rte_malloc(NULL, sizeof(*lp[i]), 0);
-        if (!lp[i])
-            rte_panic("malloc failure\n");
-        *lp[i] = (struct lcore_params){i, rx_ring, tx_ring[i], mbuf_pool};
-        rte_eal_remote_launch((lcore_function_t *)lcore_send_pkt, lp[i], lcore_num ++);
-    }
-
-    
-
-    rte_eal_wait_lcore(lcore_num-1);
+    rte_eal_wait_lcore(lcore_num - 1);
     return 0;
 }
