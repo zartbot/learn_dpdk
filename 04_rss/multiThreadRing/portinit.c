@@ -8,7 +8,10 @@ static const struct rte_eth_conf port_conf_default = {
     .rx_adv_conf = {
         .rss_conf = {
             .rss_key = NULL,
+            //mlx5 support hf:
             .rss_hf = ETH_RSS_IP | ETH_RSS_TCP | ETH_RSS_UDP,
+            //i40e support hf: 
+            //.rss_hf = ETH_RSS_NONFRAG_IPV4_UDP | ETH_RSS_NONFRAG_IPV4_TCP,
         },
     },
     .txmode = {

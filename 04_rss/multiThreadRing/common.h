@@ -21,7 +21,7 @@
 #define SCHED_RX_RING_SZ 8192
 #define SCHED_TX_RING_SZ 65536
 
-#define NUM_RX_QUEUE 4
+#define NUM_RX_QUEUE 2
 #define NUM_TX_QUEUE 8
 
 #define BURST_SIZE 64
