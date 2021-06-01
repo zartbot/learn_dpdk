@@ -24,6 +24,9 @@ static const struct rte_eth_conf port_conf_default = {
     .rxmode = {
         .max_rx_pkt_len = RTE_ETHER_MAX_LEN,
     },
+    .txmode = {
+        .mq_mode = ETH_MQ_TX_NONE,
+    }
 };
 
 static inline int
