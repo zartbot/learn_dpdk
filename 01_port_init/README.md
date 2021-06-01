@@ -39,6 +39,69 @@
     }
 ```
 
+## 接口支持能力
+
+更详细的devinfo处理可以参考01_port_init/devinfo.
+
+```bash
+[root@c220m4-Gen2 devinfo]# sudo ./build/devinfo
+EAL: Detected 72 lcore(s)
+EAL: Detected 2 NUMA nodes
+EAL: Detected shared linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/rte/mp_socket
+EAL: Selected IOVA mode 'VA'
+EAL: No available 1048576 kB hugepages reported
+EAL: Probe PCI driver: mlx5_pci (15b3:1019) device: 0000:0e:00.0 (socket 0)
+mlx5_net: No available register for sampler.
+EAL: Probe PCI driver: mlx5_pci (15b3:1019) device: 0000:0e:00.1 (socket 0)
+mlx5_net: No available register for sampler.
+EAL: Probe PCI driver: mlx5_pci (15b3:1019) device: 0000:81:00.0 (socket 1)
+mlx5_net: No available register for sampler.
+EAL: Probe PCI driver: mlx5_pci (15b3:1019) device: 0000:81:00.1 (socket 1)
+mlx5_net: No available register for sampler.
+TELEMETRY: No legacy callbacks, legacy socket not created
+
+
+
+*****************************************
+number of available port: 4
+=========================================
+port: 0         Driver:mlx5_pci
+Link up at 100 Gbps FDX Autoneg
+MAC address: 04:3F:72:EA:E2:00
+PCIe:0000:0e:00.0
+Max RX Queue:   1024    Desc:   65535
+Max TX Queue:   1024    Desc:   65535
+Offload Capability:
+  DEV_RX_OFFLOAD_VLAN_STRIP
+  DEV_RX_OFFLOAD_IPV4_CKSUM
+  DEV_RX_OFFLOAD_UDP_CKSUM
+  DEV_RX_OFFLOAD_TCP_CKSUM
+  DEV_RX_OFFLOAD_TCP_LRO
+  DEV_RX_OFFLOAD_VLAN_FILTER
+  DEV_RX_OFFLOAD_JUMBO_FRAME
+  DEV_RX_OFFLOAD_SCATTER
+  DEV_RX_OFFLOAD_TIMESTAMP
+  DEV_RX_OFFLOAD_KEEP_CRC
+  DEV_RX_OFFLOAD_RSS_HASH
+-----------------------------------------
+  DEV_TX_OFFLOAD_VLAN_INSERT
+  DEV_TX_OFFLOAD_IPV4_CKSUM
+  DEV_TX_OFFLOAD_UDP_CKSUM
+  DEV_TX_OFFLOAD_TCP_CKSUM
+  DEV_TX_OFFLOAD_TCP_TSO
+  DEV_TX_OFFLOAD_OUTER_IPV4_CKSUM
+  DEV_TX_OFFLOAD_VXLAN_TNL_TSO
+  DEV_TX_OFFLOAD_GRE_TNL_TSO
+  DEV_TX_OFFLOAD_GENEVE_TNL_TSO
+  DEV_TX_OFFLOAD_MULTI_SEGS
+  DEV_TX_OFFLOAD_MBUF_FAST_FREE
+  DEV_TX_OFFLOAD_UDP_TNL_TSO
+  DEV_TX_OFFLOAD_IP_TNL_TSO
+=========================================
+
+```
+
 ## 复杂一点的接口初始化
 
 在需要用DPDK收发包时，通常我们需要做更复杂的接口初始化操作，因此我们通常会专门写一个port_init函数,这个函数的参数为portid和相关的mbuf_pool：
