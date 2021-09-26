@@ -5,7 +5,7 @@
 sudo apt update
 sudo apt upgrade
 
-sudo apt install openssh-server terminator tmux build-essential
+sudo apt install openssh-server terminator tmux build-essential libnuma-dev 
 ```
 
 然后修改grub，打开iommu
